@@ -2,6 +2,14 @@
 
 Three implementations of `sum_to_n` (formula, recursion, loop) with complexity analysis.
 
+## Assumptions 
+
+The solution is presented under these assumptions:
+
+- **Negative Integers:** for all negative integers, their absolute values must be taken.
+
+- **NaN & Infinity:** all inputs are validated against `NaN` or `Infinity` and should return `0` for these.
+
 ## Run Tests with Docker
 
 Build the image:
