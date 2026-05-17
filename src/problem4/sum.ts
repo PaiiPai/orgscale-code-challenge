@@ -3,7 +3,7 @@ const sameSum = [0, 1];
 const isValidInput = (
   n: number
 ): boolean =>
-  Number.isInteger(n) && n >= 0 && n <= 134217726;
+  Number.isInteger(n) && n >= 0;
 
 const normalizeInput = (
   n: number
