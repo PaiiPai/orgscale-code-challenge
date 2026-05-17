@@ -276,4 +276,9 @@ Sample output:
 
 Both should move behind **Redis** — `rate-limit-redis` for the limiter and a `SET key value NX PX <ttl>` pattern (or a small `EVAL` script) for the idempotency lock and stored response. Redis also gives us first-class TTL handling, so the periodic prune sweep in `src/middleware/idempotency.ts` can go away.
 
-Other follow-ups worth flagging: production-grade reliable structured logging with request IDs (e.g. `winston` can determine log severity and have exporters for most database servers), an OpenAPI spec derived from the Zod schemas, and authentication/authorisation once the resource model is no longer public.
+**Security — CORS and Authorization.** The service currently runs without any cross-origin policy or auth layer, which is fine for a local demo but unacceptable for anything user-facing:
+
+- **CORS.** Mount the [`cors`](https://github.com/expressjs/cors) middleware with an explicit allow-list of origins (driven by an env var like `CORS_ORIGINS`), restrict methods to the ones the API actually serves, and only enable `credentials: true` when cookie-based sessions are in play. Avoid the `*` wildcard in production.
+- **Authorization.** Put every private `/resources` route behind an auth middleware — JWT bearer tokens (verified with a library like `jose`) or an OAuth2/OIDC introspection call against the org's IdP. Pair that with a coarse RBAC check (e.g. `resource:read` / `resource:write` scopes) and scope the data layer to the authenticated principal so users can only see their own rows. Secrets (`JWT_PUBLIC_KEY`, client IDs) belong in env vars, never in the repo.
+
+Other follow-ups worth flagging: production-grade reliable structured logging with request IDs (e.g. `winston` can determine log severity and have exporters for most database servers), and an OpenAPI spec derived from the Zod schemas.
